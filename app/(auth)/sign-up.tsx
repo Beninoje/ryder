@@ -1,5 +1,8 @@
+import CustomButton from '@/components/custom-button'
+import OAuth from '@/components/google-auth'
 import InputField from '@/components/input-field'
 import { icons, images } from '@/constants'
+import { Link } from 'expo-router'
 import React, { useState } from 'react'
 import { Image, ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -10,6 +13,10 @@ const SignUp = () => {
     email:"",
     password:"",
   })
+
+  const onSignUpPress = () => {
+
+  }
   return (
     <ScrollView className='flex-1 bg-white'>
             <View className='flex-1 bg-white'>
@@ -19,8 +26,8 @@ const SignUp = () => {
               </View>
               <View className='p-5 '>
                 <InputField
-                  label='Name'
-                  placeholder='Enter your name'
+                  label="Name"
+                  placeholder="Enter your name"
                   icon={icons.person}
                   value={form.name}
                   onChangeText={(value)=>{
@@ -30,7 +37,31 @@ const SignUp = () => {
                     })
                   }}
                 />
+                 <InputField
+                  label="Email"
+                  placeholder="Enter email"
+                  icon={icons.email}
+                  textContentType="emailAddress"
+                  value={form.email}
+                  onChangeText={(value) => setForm({ ...form, email: value })}
+                />
+                <InputField
+                  label="Password"
+                  placeholder="Enter password"
+                  icon={icons.lock}
+                  secureTextEntry={true}
+                  textContentType="password"
+                  value={form.password}
+                  onChangeText={(value) => setForm({ ...form, password: value })}
+                />
+                <CustomButton
+                  title="Sign Up"
+                  onPress={onSignUpPress}
+                  className="mt-6"
+                />
+                <OAuth/>
               </View>
+                <Text className='flex w-full text-center mt-3 mb-10'>Already have an account? <Link href="/sign-in" className='text-primary-500 font-JakartaSemiBold'>Sign In</Link></Text>
             </View>
     </ScrollView>
   )

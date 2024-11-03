@@ -6,7 +6,6 @@ import checkmark from "@/assets/icons/check.png";
 import close from "@/assets/icons/close.png";
 import dollar from "@/assets/icons/dollar.png";
 import email from "@/assets/icons/email.png";
-import eyecross from "@/assets/icons/eyecross.png";
 import google from "@/assets/icons/google.png";
 import home from "@/assets/icons/home.png";
 import list from "@/assets/icons/list.png";
@@ -31,6 +30,8 @@ import onboarding1 from "@/assets/images/onboarding1.png";
 import onboarding2 from "@/assets/images/onboarding2.png";
 import onboarding3 from "@/assets/images/onboarding3.png";
 import signUpCar from "@/assets/images/signup-car.png";
+import eyeclose from "@/assets/icons/eyecross.png";
+import eyeopen from  "@/assets/icons/eyeopen.png";
 
 export const images = {
   onboarding1,
@@ -52,7 +53,6 @@ export const icons = {
   close,
   dollar,
   email,
-  eyecross,
   google,
   home,
   list,
@@ -69,6 +69,8 @@ export const icons = {
   star,
   target,
   to,
+  eyeclose,
+  eyeopen,
 };
 
 export const onboarding = [
