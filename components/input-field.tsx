@@ -30,7 +30,7 @@ const InputField = ({
             className={`rounded-full p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} text-left lowercase`}
             secureTextEntry={secureTextEntry && !reveal}
             placeholderTextColor="gray"
-            
+            autoCapitalize="none"
             {...props} />
             {label === "Password" ? 
               <TouchableOpacity className='mr-3' onPress={handleRevealPassword}>

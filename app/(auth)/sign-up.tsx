@@ -122,7 +122,7 @@ const SignUp = () => {
               </View>
                 <Text className='flex w-full text-center mt-3 mb-10'>Already have an account? <Link href="/sign-in" className='text-primary-500 font-JakartaSemiBold'>Sign In</Link></Text>
                 <ReactNativeModal 
-                  isVisible={verificationEmail.state === "pending"}
+                  isVisible={verificationEmail.state === "pending" || verificationEmail.state === "failed"}
                   onModalHide={() =>{
                     if(verificationEmail.state === "success")
                     {
@@ -140,14 +140,14 @@ const SignUp = () => {
                     <InputField
                       label={"Code"}
                       icon={icons.lock}
-                      placeholder={"12345"}
+                      placeholder={"123456"}
                       value={verificationEmail.code}
                       keyboardType="numeric"
                       onChangeText={(code) =>
                         setVerificationEmail({ ...verificationEmail, code })
                       }
                     />
-                    {verificationEmail.error && <Text className='text-red-5000'>{verificationEmail.error}</Text>}
+                    {verificationEmail.error && <Text className='text-red-500'>{verificationEmail.error}</Text>}
                     <CustomButton
                       title="Verify Email"
                       onPress={
