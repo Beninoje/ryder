@@ -2,21 +2,47 @@ import CustomButton from '@/components/custom-button'
 import OAuth from '@/components/google-auth'
 import InputField from '@/components/input-field'
 import { icons, images } from '@/constants'
-import { Link } from 'expo-router'
-import React, { useState } from 'react'
-import { Image, ScrollView, Text, View } from 'react-native'
+import { useSignIn } from '@clerk/clerk-expo'
+import React, { useCallback, useState } from 'react'
+import { Link, useRouter } from 'expo-router'
+import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const SignIn = () => {
+  const { signIn, setActive, isLoaded } = useSignIn()
+  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+
   const [form, setForm] = useState({
     name:"",
     email:"",
     password:"",
   })
 
-  const onSignUpPress = () => {
+  const onSignInPress = useCallback(async () => {
+    if (!isLoaded || loading) return;
+    
 
-  }
+    try {
+      setLoading(true)
+      const signInAttempt = await signIn.create({
+        identifier: form.email,
+        password: form.password,
+      })
+
+      if (signInAttempt.status === 'complete') {
+        await setActive({ session: signInAttempt.createdSessionId })
+        setLoading(false)
+        router.push('/(root)/(tabs)/home')
+      } else {
+        setLoading(false)
+        console.error(JSON.stringify(signInAttempt, null, 2))
+      }
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2))
+    }
+  }, [isLoaded, form.email, form.password])
+
   return (
     <ScrollView className='flex-1 bg-white'>
             <View className='flex-1 bg-white'>
@@ -42,11 +68,15 @@ const SignIn = () => {
                   value={form.password}
                   onChangeText={(value) => setForm({ ...form, password: value })}
                 />
-                <CustomButton
-                  title="Sign Up"
-                  onPress={onSignUpPress}
-                  className="mt-6"
-                />
+                {loading ? (
+                  <ActivityIndicator size="large" color="#0286ff" className="mt-6" />
+                ) : (
+                  <CustomButton
+                    title="Sign In"
+                    onPress={onSignInPress}
+                    className="mt-6"
+                  />
+                )}
                 <OAuth/>
               </View>
                 <Text className='flex w-full text-center mt-3 mb-10'>Don't have an account? <Link href="/sign-up" className='text-primary-500 font-JakartaSemiBold'>Sign Up</Link></Text>

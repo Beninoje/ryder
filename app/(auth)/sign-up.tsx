@@ -5,11 +5,13 @@ import { icons, images } from '@/constants'
 import { useSignUp } from '@clerk/clerk-expo'
 import { Link, useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { Alert, Image, ScrollView, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ReactNativeModal } from 'react-native-modal';
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp()
+  const [loading, setLoading] = useState(false);
+  const [loadingOTP, setLoadingOTP] = useState(false);
   const [showSuccessModal,setShowSuccessModal] = useState(false)
   const router = useRouter()
   const [form, setForm] = useState({
@@ -25,11 +27,10 @@ const SignUp = () => {
   })
 
   const onSignUpPress = async () => {
-    if (!isLoaded) {
-      return
-    }
+    if (!isLoaded || loading ) return;
 
     try {
+      setLoading(true)
       await signUp.create({
         emailAddress: form.email,
         password: form.password,
@@ -42,14 +43,17 @@ const SignUp = () => {
         state: "pending",
       })
     } catch (err: any) {
+      setLoading(false)
       Alert.alert('Error',err.errors[0].longMessage)
     }
   }
 
   const onPressVerify = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || loadingOTP) return;
     
     try {
+
+      setLoadingOTP(true)
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code: verificationEmail.code
       })
@@ -57,11 +61,14 @@ const SignUp = () => {
       if (completeSignUp.status === 'complete') {
         // TODO Create User in DB as well
         await setActive({ session: completeSignUp.createdSessionId })
+
+        setLoadingOTP(false)
         setVerificationEmail({
          ...verificationEmail,
           state: "success",
         })
       } else {
+        setLoadingOTP(false)
         setVerificationEmail({
           ...verificationEmail,
            error:"Verfication Failed",
@@ -69,6 +76,8 @@ const SignUp = () => {
          })
       }
     } catch (err: any) {
+
+      setLoadingOTP(false)
       setVerificationEmail({
         ...verificationEmail,
          error:err.errors[0].longMessage,
@@ -113,11 +122,15 @@ const SignUp = () => {
                   value={form.password}
                   onChangeText={(value) => setForm({ ...form, password: value })}
                 />
-                <CustomButton
-                  title="Sign Up"
-                  onPress={onSignUpPress}
-                  className="mt-6"
-                />
+                {loading ? (
+                  <ActivityIndicator size="large" color="#0286ff" className="mt-6" />
+                ) : (
+                  <CustomButton
+                    title="Sign In"
+                    onPress={onSignUpPress}
+                    className="mt-6"
+                  />
+                )}
                 <OAuth/>
               </View>
                 <Text className='flex w-full text-center mt-3 mb-10'>Already have an account? <Link href="/sign-in" className='text-primary-500 font-JakartaSemiBold'>Sign In</Link></Text>
@@ -148,13 +161,15 @@ const SignUp = () => {
                       }
                     />
                     {verificationEmail.error && <Text className='text-red-500'>{verificationEmail.error}</Text>}
-                    <CustomButton
-                      title="Verify Email"
-                      onPress={
-                        onPressVerify
-                      }
-                      className="mt-5 bg-success-500"
-                    />
+                    {loadingOTP ? (
+                  <ActivityIndicator size="large" color="#0286ff" className="mt-6" />
+                    ) : (
+                      <CustomButton
+                        title="Sign In"
+                        onPress={onPressVerify}
+                        className="mt-6"
+                      />
+                    )}
                   </View>
                 </ReactNativeModal>
                 <ReactNativeModal isVisible={showSuccessModal}>
@@ -166,15 +181,17 @@ const SignUp = () => {
                       <Text className="text-base text-gray-400 font-Jakarta text-center mt-2">
                         You have successfully verified your account.
                       </Text>
-                      <CustomButton
-                        title="Browse Home"
+                      
+                  <CustomButton
+                  title="Browse Home"
                         
-                        onPress={() => {
-                          setShowSuccessModal(false);
-                          router.push(`/(root)/(tabs)/home`);
-                        }}
-                        className="mt-5"
-                      />
+                  onPress={() => {
+                    setShowSuccessModal(false);
+                    router.push(`/(root)/(tabs)/home`);
+                  }}
+                  className="mt-5"
+                  />
+              
                     </View>
                 </ReactNativeModal>
             </View>
