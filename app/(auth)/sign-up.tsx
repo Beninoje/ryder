@@ -8,6 +8,7 @@ import React, { useState } from 'react'
 import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ReactNativeModal } from 'react-native-modal';
+import { fetchAPI } from '@/actions/fetch'
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp()
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,14 @@ const SignUp = () => {
 
       if (completeSignUp.status === 'complete') {
         // TODO Create User in DB as well
+        await fetchAPI("/(api)/user",{
+          method: 'POST',
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            clerkId: completeSignUp.createdUserId,
+          }),
+        })
         await setActive({ session: completeSignUp.createdSessionId })
 
         setLoadingOTP(false)
@@ -80,9 +89,9 @@ const SignUp = () => {
       setLoadingOTP(false)
       setVerificationEmail({
         ...verificationEmail,
-         error:err.errors[0].longMessage,
-         state: "failed",
-       })
+        error: err.errors[0].longMessage,
+        state: "failed",
+      });
     }
   }
   return (
