@@ -44,7 +44,37 @@ export const images = {
   message,
 };
 
-export const icons = {
+
+interface IconSet {
+  arrowDown: any;
+  arrowUp: any;
+  backArrow: any;
+  chat: any;
+  checkmark: any;
+  close: any;
+  dollar: any;
+  email: any;
+  google: any;
+  home: any;
+  list: any;
+  lock: any;
+  map: any;
+  marker: any;
+  out: any;
+  person: any;
+  pin: any;
+  point: any;
+  profile: any;
+  search: any;
+  selectedMarker: any;
+  star: any;
+  target: any;
+  to: any;
+  eyeclose: any;
+  eyeopen: any;
+}
+
+export const icons: IconSet = {
   arrowDown,
   arrowUp,
   backArrow,
