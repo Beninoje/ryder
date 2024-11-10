@@ -4,7 +4,7 @@ import RideCard from '@/components/ride-card'
 import { icons, images } from '@/constants'
 import { useLocationStore } from '@/store'
 import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -110,6 +110,7 @@ const recentRides = [
 export default function Home() {
   const { setUserLocation, setDestinationLocation } = useLocationStore();
   const { user } = useUser();
+  const router = useRouter()
   const loading = false;
   const [hasLocationPermissions, setHasLocationPermissions] = useState(false);
 
@@ -140,8 +141,14 @@ export default function Home() {
   const handleSignOut = () => {
 
   }
-  const handleDestinationPress = () => {
-
+  const handleDestinationPress = (location: {
+    latitude:number, 
+    longitude:number, 
+    address:string
+  }) => {
+    setDestinationLocation(location);
+    router.push("/(root)/find-ride");
+    
   }
   return (
     <SafeAreaView className='bg-general-500'>
