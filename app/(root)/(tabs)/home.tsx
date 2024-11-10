@@ -3,7 +3,7 @@ import Map from '@/components/map'
 import RideCard from '@/components/ride-card'
 import { icons, images } from '@/constants'
 import { useLocationStore } from '@/store'
-import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
+import { SignedIn, SignedOut, useAuth, useUser } from '@clerk/clerk-expo'
 import { Link, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
@@ -112,6 +112,7 @@ export default function Home() {
   const { user } = useUser();
   const router = useRouter()
   const loading = false;
+  const { signOut } = useAuth();
   const [hasLocationPermissions, setHasLocationPermissions] = useState(false);
 
   useEffect(()=>{
@@ -139,7 +140,9 @@ export default function Home() {
   requestLocation();
   },[])
   const handleSignOut = () => {
+    signOut();
 
+    router.push("/(auth)/sign-in");
   }
   const handleDestinationPress = (location: {
     latitude:number, 
