@@ -4,9 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Rides = () => {
   return (
-<SafeAreaView>
-            <Text>Rides</Text>
-        </SafeAreaView>
+    <SafeAreaView>
+      <Text>Rides</Text>
+    </SafeAreaView>
   )
 }
 
