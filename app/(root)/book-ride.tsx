@@ -6,7 +6,8 @@ import { icons } from '@/constants'
 import { formatTime } from '@/lib/utils'
 import { useDriverStore, useLocationStore } from '@/store'
 import { router } from 'expo-router'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { StripeProvider } from '@stripe/stripe-react-native';
 import { Image, Text, View } from 'react-native'
 
 const BookRide = () => {
@@ -17,7 +18,14 @@ const BookRide = () => {
       (driver) => +driver.id === selectedDriver,
     )[0];
 
+    
+
   return (
+    <StripeProvider
+      publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
+      merchantIdentifier="merchant.uber.com" // required for Apple Pay
+      urlScheme="myapp" // required for 3D Secure and bank redirects
+    >
     <RideLayout title="Book Ride">
             <>
                 <Text className="text-xl font-JakartaSemiBold mb-3">
@@ -91,7 +99,11 @@ const BookRide = () => {
                 <StripePaymentButton/>
             </>
         </RideLayout>
+        </StripeProvider>
   )
 }
+
+
+    
 
 export default BookRide
