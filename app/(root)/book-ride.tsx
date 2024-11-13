@@ -9,8 +9,10 @@ import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { Image, Text, View } from 'react-native'
+import { useUser } from '@clerk/clerk-expo'
 
 const BookRide = () => {
+    const { user } = useUser();
     const { drivers, selectedDriver } = useDriverStore();
     const { userAddress, destinationAddress } = useLocationStore()
 
@@ -96,7 +98,14 @@ const BookRide = () => {
                         </Text>
                     </View>
                 </View>
-                <StripePaymentButton/>
+                <StripePaymentButton
+                    fullName={user?.fullName!}
+                    email={user?.emailAddresses[0].emailAddress!}
+                    amount={driverDetails?.price!}
+                    driverId={driverDetails?.id}
+                    rideTime={driverDetails?.time!}
+
+                />
             </>
         </RideLayout>
         </StripeProvider>

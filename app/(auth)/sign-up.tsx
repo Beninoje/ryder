@@ -8,7 +8,8 @@ import React, { useState } from 'react'
 import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ReactNativeModal } from 'react-native-modal';
-import { fetchAPI } from '@/actions/fetch'
+import { fetchAPI } from '@/actions/fetch';
+
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp()
   const [loading, setLoading] = useState(false);
