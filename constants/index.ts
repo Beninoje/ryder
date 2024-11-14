@@ -6,6 +6,7 @@ import checkmark from "@/assets/icons/check.png";
 import close from "@/assets/icons/close.png";
 import dollar from "@/assets/icons/dollar.png";
 import email from "@/assets/icons/email.png";
+import eyecross from "@/assets/icons/eyecross.png";
 import google from "@/assets/icons/google.png";
 import home from "@/assets/icons/home.png";
 import list from "@/assets/icons/list.png";
@@ -30,8 +31,6 @@ import onboarding1 from "@/assets/images/onboarding1.png";
 import onboarding2 from "@/assets/images/onboarding2.png";
 import onboarding3 from "@/assets/images/onboarding3.png";
 import signUpCar from "@/assets/images/signup-car.png";
-import eyeclose from "@/assets/icons/eyecross.png";
-import eyeopen from  "@/assets/icons/eyeopen.png";
 
 export const images = {
   onboarding1,
@@ -44,37 +43,7 @@ export const images = {
   message,
 };
 
-
-interface IconSet {
-  arrowDown: any;
-  arrowUp: any;
-  backArrow: any;
-  chat: any;
-  checkmark: any;
-  close: any;
-  dollar: any;
-  email: any;
-  google: any;
-  home: any;
-  list: any;
-  lock: any;
-  map: any;
-  marker: any;
-  out: any;
-  person: any;
-  pin: any;
-  point: any;
-  profile: any;
-  search: any;
-  selectedMarker: any;
-  star: any;
-  target: any;
-  to: any;
-  eyeclose: any;
-  eyeopen: any;
-}
-
-export const icons: IconSet = {
+export const icons = {
   arrowDown,
   arrowUp,
   backArrow,
@@ -83,6 +52,7 @@ export const icons: IconSet = {
   close,
   dollar,
   email,
+  eyecross,
   google,
   home,
   list,
@@ -99,8 +69,6 @@ export const icons: IconSet = {
   star,
   target,
   to,
-  eyeclose,
-  eyeopen,
 };
 
 export const onboarding = [

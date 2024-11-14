@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "uber-clone",
-    "slug": "uber-clone",
+    "name": "uber",
+    "slug": "uber",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2f80ed"
+      "backgroundColor": "#2F80ED"
     },
     "ios": {
       "supportsTablet": true
@@ -28,11 +28,11 @@
     },
     "plugins": [
       [
-        "expo-router",{
-          "origin": "http://uber.com/"
+        "expo-router",
+        {
+          "origin": "https://uber.dev/"
         }
       ]
-      
     ],
     "experiments": {
       "typedRoutes": true

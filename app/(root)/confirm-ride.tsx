@@ -1,21 +1,14 @@
-import CustomButton from '@/components/custom-button'
-import DriverCard from '@/components/driver-card'
-import GoogleTextInput from '@/components/google-text-input'
-import RideLayout from '@/components/ride-layout'
-import { icons } from '@/constants'
-import { useDriverStore, useLocationStore } from '@/store'
-import { router } from 'expo-router'
-import React from 'react'
-import { Text, View } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
+import { router } from "expo-router";
+import { FlatList, View } from "react-native";
+
+import CustomButton from "@/components/CustomButton";
+import DriverCard from "@/components/DriverCard";
+import RideLayout from "@/components/RideLayout";
+import { useDriverStore } from "@/store";
 
 const ConfirmRide = () => {
-    const {
-      drivers,
-      selectedDriver, 
-      setSelectedDriver 
-    } = useDriverStore();
-    
+  const { drivers, selectedDriver, setSelectedDriver } = useDriverStore();
+
   return (
     <RideLayout title={"Choose a Rider"} snapPoints={["65%", "85%"]}>
       <FlatList
@@ -25,7 +18,7 @@ const ConfirmRide = () => {
           <DriverCard
             item={item}
             selected={selectedDriver!}
-            setSelected={() => setSelectedDriver(Number(item.id!))}
+            setSelected={() => setSelectedDriver(item.id!)}
           />
         )}
         ListFooterComponent={() => (
@@ -38,7 +31,7 @@ const ConfirmRide = () => {
         )}
       />
     </RideLayout>
-  )
-}
+  );
+};
 
-export default ConfirmRide
+export default ConfirmRide;

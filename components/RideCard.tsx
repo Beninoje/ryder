@@ -1,32 +1,18 @@
+import { Image, Text, View } from "react-native";
 
-import { icons } from '@/constants'
-import { formatDate, formatTime } from '@/lib/utils'
-import { Ride } from '@/types'
-import React from 'react'
-import { Image, Text, View } from 'react-native'
+import { icons } from "@/constants";
+import { formatDate, formatTime } from "@/lib/utils";
+import { Ride } from "@/types/type";
 
-const RideCard = ({ 
-    ride:{
-        destination_latitude,
-        destination_address,
-        destination_longitude,
-        origin_address,
-        created_at,
-        ride_time,
-        driver,
-        payment_status,
-    },
- }:{ 
-    ride:Ride;
-}) => {
+const RideCard = ({ ride }: { ride: Ride }) => {
   return (
     <View className="flex flex-row items-center justify-center bg-white rounded-lg shadow-sm shadow-neutral-300 mb-3">
       <View className="flex flex-col items-start justify-center p-3">
         <View className="flex flex-row items-center justify-between">
           <Image
             source={{
-                uri: `https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=600&height=400&center=lonlat:${destination_longitude},${destination_latitude}&zoom=14&apiKey=${process.env.EXPO_PUBLIC_GEOAPIFY_API_KEY}`,
-              }}
+              uri: `https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=600&height=400&center=lonlat:${ride.destination_longitude},${ride.destination_latitude}&zoom=14&apiKey=${process.env.EXPO_PUBLIC_GEOAPIFY_API_KEY}`,
+            }}
             className="w-[80px] h-[90px] rounded-lg"
           />
 
@@ -34,14 +20,14 @@ const RideCard = ({
             <View className="flex flex-row items-center gap-x-2">
               <Image source={icons.to} className="w-5 h-5" />
               <Text className="text-md font-JakartaMedium" numberOfLines={1}>
-                {origin_address}
+                {ride.origin_address}
               </Text>
             </View>
 
             <View className="flex flex-row items-center gap-x-2">
               <Image source={icons.point} className="w-5 h-5" />
               <Text className="text-md font-JakartaMedium" numberOfLines={1}>
-                {destination_address}
+                {ride.destination_address}
               </Text>
             </View>
           </View>
@@ -53,7 +39,7 @@ const RideCard = ({
               Date & Time
             </Text>
             <Text className="text-md font-JakartaBold" numberOfLines={1}>
-              {formatDate(created_at)}, {formatTime(ride_time)}
+              {formatDate(ride.created_at)}, {formatTime(ride.ride_time)}
             </Text>
           </View>
 
@@ -62,7 +48,7 @@ const RideCard = ({
               Driver
             </Text>
             <Text className="text-md font-JakartaBold">
-              {driver.first_name} {driver.last_name}
+              {ride.driver.first_name} {ride.driver.last_name}
             </Text>
           </View>
 
@@ -71,7 +57,7 @@ const RideCard = ({
               Car Seats
             </Text>
             <Text className="text-md font-JakartaBold">
-              {driver.car_seats}
+              {ride.driver.car_seats}
             </Text>
           </View>
 
@@ -80,15 +66,15 @@ const RideCard = ({
               Payment Status
             </Text>
             <Text
-              className={`text-md capitalize font-JakartaBold ${payment_status === "paid" ? "text-green-500" : "text-red-500"}`}
+              className={`text-md capitalize font-JakartaBold ${ride.payment_status === "paid" ? "text-green-500" : "text-red-500"}`}
             >
-              {payment_status}
+              {ride.payment_status}
             </Text>
           </View>
         </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default RideCard
+export default RideCard;

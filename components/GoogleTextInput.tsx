@@ -1,5 +1,6 @@
 import { icons } from '@/constants';
-import { GoogleInputProps } from '@/types'
+import { GoogleInputProps } from '@/types/type';
+
 import React from 'react'
 import { Image, Text, View } from 'react-native'
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";

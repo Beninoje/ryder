@@ -3,15 +3,14 @@ import { Image, Text, TouchableOpacity, View } from "react-native";
 
 import { icons } from "@/constants";
 import { formatTime } from "@/lib/utils";
-import { DriverCardProps } from "@/types";
-
+import { DriverCardProps } from "@/types/type";
 
 const DriverCard = ({ item, selected, setSelected }: DriverCardProps) => {
   return (
     <TouchableOpacity
       onPress={setSelected}
       className={`${
-        selected === Number(item.id) ? "bg-general-600" : "bg-white"
+        selected === item.id ? "bg-general-600" : "bg-white"
       } flex flex-row items-center justify-between py-5 px-3 rounded-xl`}
     >
       <Image

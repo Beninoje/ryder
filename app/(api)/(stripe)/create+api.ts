@@ -13,19 +13,21 @@ export async function POST(request: Request) {
   }
 
   let customer;
+  const doesCustomerExist = await stripe.customers.list({
+    email,
+  });
 
-  const existingCustomer = await stripe.customers.list({email})
-
-  if(existingCustomer)
-  {
-    customer = existingCustomer.data[0];
-  }
-  else{
+  if (doesCustomerExist.data.length > 0) {
+    customer = doesCustomerExist.data[0];
+  } else {
     const newCustomer = await stripe.customers.create({
-        name, email
+      name,
+      email,
     });
-    customer = newCustomer
+
+    customer = newCustomer;
   }
+
   const ephemeralKey = await stripe.ephemeralKeys.create(
     { customer: customer.id },
     { apiVersion: "2024-06-20" },
@@ -48,6 +50,4 @@ export async function POST(request: Request) {
       customer: customer.id,
     }),
   );
-
-  
 }
