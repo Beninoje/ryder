@@ -2,6 +2,7 @@ import { Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { images } from "@/constants";
+import React from "react";
 
 const Chat = () => {
   return (

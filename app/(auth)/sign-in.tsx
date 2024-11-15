@@ -5,8 +5,10 @@ import { Alert, Image, ScrollView, Text, View } from "react-native";
 
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
-import OAuth from "@/components/OAuth";
+// import OAuth from "@/components/OAuth";
 import { icons, images } from "@/constants";
+import React from "react";
+import OAuth from "@/components/OAuth";
 
 const SignIn = () => {
   const { signIn, setActive, isLoaded } = useSignIn();

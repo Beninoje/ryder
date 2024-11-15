@@ -20,6 +20,7 @@ import { icons, images } from "@/constants";
 import { useFetch } from "@/lib/fetch";
 import { useLocationStore } from "@/store";
 import { Ride } from "@/types/type";
+import React from "react";
 
 const Home = () => {
   const { user } = useUser();
@@ -34,11 +35,7 @@ const Home = () => {
 
   const [hasPermission, setHasPermission] = useState<boolean>(false);
 
-  const {
-    data: recentRides,
-    loading,
-    error,
-  } = useFetch<Ride[]>(`/(api)/ride/${user?.id}`);
+  const  { data: recentRides, loading } = useFetch(`/(api)/ride/${user?.id}`)
 
   useEffect(() => {
     (async () => {

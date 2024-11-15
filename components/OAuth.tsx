@@ -1,25 +1,23 @@
-import { useOAuth } from "@clerk/clerk-expo";
-import { router } from "expo-router";
-import { Alert, Image, Text, View } from "react-native";
-
-import CustomButton from "@/components/CustomButton";
-import { icons } from "@/constants";
-import { googleOAuth } from "@/lib/auth";
+import { useOAuth } from '@clerk/clerk-expo'
+import React, { useCallback } from 'react'
+import { Alert, Image, Text, View } from 'react-native'
+import CustomButton from './CustomButton'
+import { icons } from '@/constants'
+import { googleOAuth } from '@/lib/auth'
+import { router } from 'expo-router'
 
 const OAuth = () => {
-  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+    const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' })
 
   const handleGoogleSignIn = async () => {
     const result = await googleOAuth(startOAuthFlow);
 
-    if (result.code === "session_exists") {
-      Alert.alert("Success", "Session exists. Redirecting to home screen.");
-      router.replace("/(root)/(tabs)/home");
+    if (result.code === "session_exists" || result.code === "success") {
+      router.push("/(root)/(tabs)/home");
     }
 
-    Alert.alert(result.success ? "Success" : "Error", result.message);
+    
   };
-
   return (
     <View>
       <View className="flex flex-row justify-center items-center mt-4 gap-x-3">
@@ -43,7 +41,7 @@ const OAuth = () => {
         onPress={handleGoogleSignIn}
       />
     </View>
-  );
-};
+  )
+}
 
-export default OAuth;
+export default OAuth
