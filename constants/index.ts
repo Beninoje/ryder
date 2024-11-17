@@ -6,7 +6,6 @@ import checkmark from "@/assets/icons/check.png";
 import close from "@/assets/icons/close.png";
 import dollar from "@/assets/icons/dollar.png";
 import email from "@/assets/icons/email.png";
-import eyecross from "@/assets/icons/eyecross.png";
 import google from "@/assets/icons/google.png";
 import home from "@/assets/icons/home.png";
 import list from "@/assets/icons/list.png";
@@ -23,6 +22,7 @@ import selectedMarker from "@/assets/icons/selected-marker.png";
 import star from "@/assets/icons/star.png";
 import target from "@/assets/icons/target.png";
 import to from "@/assets/icons/to.png";
+import tick from "@/assets/icons/charm_tick.png";
 import check from "@/assets/images/check.png";
 import getStarted from "@/assets/images/get-started.png";
 import message from "@/assets/images/message.png";
@@ -32,6 +32,10 @@ import onboarding2 from "@/assets/images/onboarding2.png";
 import onboarding3 from "@/assets/images/onboarding3.png";
 import signUpCar from "@/assets/images/signup-car.png";
 import pfplaceholder from "@/assets/images/profile_placeholder.png";
+import cross from "@/assets/images/cross.png";
+import eyecross from "@/assets/icons/eyecross.png";
+import eyeopen from "@/assets/icons/eyeopen.png";
+import upload from "@/assets/icons/upload.png";
 
 export const images = {
   onboarding1,
@@ -43,6 +47,7 @@ export const images = {
   noResult,
   message,
   pfplaceholder,
+  cross
 };
 
 export const icons = {
@@ -52,7 +57,9 @@ export const icons = {
   chat,
   checkmark,
   close,
+  eyeopen,
   dollar,
+  upload,
   email,
   eyecross,
   google,
@@ -62,6 +69,7 @@ export const icons = {
   map,
   marker,
   out,
+  tick,
   person,
   pin,
   point,

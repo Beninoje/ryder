@@ -11,9 +11,8 @@ import { icons, images } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
 import React from "react";
 import OAuth from "@/components/OAuth";
-
-const SignUp = () => {
-  const { isLoaded, signUp, setActive } = useSignUp();
+const SignUp = () => { 
+const { isLoaded, signUp, setActive } = useSignUp();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const [form, setForm] = useState({
@@ -33,6 +32,8 @@ const SignUp = () => {
       await signUp.create({
         emailAddress: form.email,
         password: form.password,
+        firstName: form.name.split(" ")[0],
+        lastName: form.name.split(" ")[1],
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setVerification({
@@ -40,8 +41,6 @@ const SignUp = () => {
         state: "pending",
       });
     } catch (err: any) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
       console.log(JSON.stringify(err, null, 2));
       Alert.alert("Error", err.errors[0].longMessage);
     }
@@ -185,7 +184,10 @@ const SignUp = () => {
             </Text>
             <CustomButton
               title="Browse Home"
-              onPress={() => router.push(`/(root)/(tabs)/home`)}
+              onPress={() => {
+                router.push(`/(root)/(tabs)/home`)
+                setShowSuccessModal(false);
+              }}
               className="mt-5"
             />
           </View>
