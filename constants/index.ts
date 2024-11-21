@@ -36,6 +36,9 @@ import cross from "@/assets/images/cross.png";
 import eyecross from "@/assets/icons/eyecross.png";
 import eyeopen from "@/assets/icons/eyeopen.png";
 import upload from "@/assets/icons/upload.png";
+import camera from "@/assets/icons/camera.png";
+import gallery from "@/assets/icons/gallery.png";
+import trash from "@/assets/icons/trash.png";
 
 export const images = {
   onboarding1,
@@ -65,6 +68,9 @@ export const icons = {
   google,
   home,
   list,
+  camera,
+  gallery,
+  trash,
   lock,
   map,
   marker,

@@ -9,10 +9,11 @@ import InputField from "@/components/InputField";
 // import OAuth from "@/components/OAuth";
 import { icons, images } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
+
 import React from "react";
 import OAuth from "@/components/OAuth";
 const SignUp = () => { 
-const { isLoaded, signUp, setActive } = useSignUp();
+  const { isLoaded, signUp, setActive } = useSignUp();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const [form, setForm] = useState({
