@@ -6,16 +6,19 @@ import InputField from "@/components/InputField";
 import CustomButton from "@/components/CustomButton";
 import { ReactNativeModal } from "react-native-modal";
 import { icons } from "@/constants";
-
+import * as ImagePicker from "expo-image-picker";
+import {ref, uploadBytesResumable, getDownloadURL} from "firebase/storage"
+import { addDoc, collection, onSnapshot } from "firebase/firestore"
+import { db, storage } from "@/firebaseConfig";
 const Profile = () => {
   const { user } = useUser();
-
-
-
+  console.log(user)
   const firstInitial = user?.firstName?.charAt(0)?.toUpperCase();
   const lastInitial = user?.lastName?.charAt(0)?.toUpperCase();
   const [showImgModal, setShowImgModal] = useState(false);
   const initials = `${firstInitial}${lastInitial}`;
+  const [saveImage, setSaveImage] = useState("");
+  const [progressUpload, setProgressUpload] = useState(0)
 
   const [form, setForm] = useState({
     firstName: user?.firstName || "",
@@ -38,28 +41,8 @@ const Profile = () => {
         lastName: form.lastName,
       });
 
-      // // Step 2: Update email address directly
-      // if (form.email !== user?.primaryEmailAddress?.emailAddress) {
-      //   const emailAddressId = user?.primaryEmailAddress?.id;
-        
-      //   if (!emailAddressId) {
-      //     throw new Error("No primary email address found.");
-      //   }
 
-      //   // Update the existing email address (not create a new one)
-      //   const updatedEmail = await user?.updateEmailAddress(emailAddressId, {
-      //     emailAddress: form.email,
-      //     verified: false, // Initially unverified, so it will require verification
-      //   });
-
-      //   // Proceed with verification if email was updated
-      //   if (updatedEmail) {
-      //     await updatedEmail.prepareVerification({ strategy: "email_code" });
-      //     setVerification({ ...verification, state: "pending" });
-      //   }
-      // } else {
         Alert.alert("Success", "Profile updated successfully!");
-      // }
     } catch (error: any) {
       const errorMessage =
         error?.errors?.[0]?.longMessage || "Failed to update profile.";
@@ -85,17 +68,6 @@ const Profile = () => {
       if (result?.status === "verified") {
         setVerification({ ...verification, state: "success" });
         Alert.alert("Success", "Email updated and verified!");
-
-        // // Step 3: Set the verified email as primary
-        // const updateResult = await user?.update({
-        //   primaryEmailAddressId: emailAddress.id,
-        // });
-
-        // if (updateResult?.primaryEmailAddressId === emailAddress.id) {
-        //   console.log("Primary email updated successfully");
-        // } else {
-        //   throw new Error("Failed to update primary email.");
-        // }
       } else {
         throw new Error("Verification failed");
       }
@@ -108,11 +80,120 @@ const Profile = () => {
       console.error("Verification error:", error);
     }
   };
-  const handleImgUpload = () => {
-    setShowImgModal(true); 
+  const saveProfileImage = async (image:string) => {
+    try {
+      
+      setSaveImage(image);
+      const response = await fetch(image);
+      const blob = await response.blob();
 
+      const storageRef = ref(storage, `ProfileImages/${new Date().getTime()}`);
+
+    // Start the upload process
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    // Monitor the upload progress
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload is ${progress.toFixed(2)}% done`);
+        setProgressUpload(Number(progress.toFixed(2)));
+      },
+      (error) => {
+        console.error("Upload error:", error);
+        Alert.alert("Error", "Failed to upload image");
+      },
+      async () => {
+        // Get the download URL once the upload completes
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        console.log("File available at:", downloadURL);
+
+        // Optionally save the URL in state or database
+        setSaveImage(downloadURL);
+        saveImgToFirebase(downloadURL);
+
+        if (user) {
+            await user.update({
+            unsafeMetadata: {
+              imageUrl: downloadURL,
+            },
+          });
+          console.log("Clerk profile image updated.");
+        }
+
+        Alert.alert("Success", "Image uploaded successfully!");
+      }
+    );
+    setShowImgModal(false); // Close the modal
+  }
+  catch (error) {
+    console.error("Save image error:", error);
+    Alert.alert("Error", "Failed to save profile image.");
+  }
+}
+
+  const handleImgUpload = async (mode:string) => {
+    try {
+    let result: ImagePicker.ImagePickerResult;
+
+    if (mode === "gallery") {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        throw new Error("Permission to access the gallery is required.");
+      }
+
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+    } else {
+      // Request permissions for the camera
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        throw new Error("Permission to access the camera is required.");
+      }
+
+      // Launch the camera
+      result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        await saveProfileImage(result.assets[0].uri); 
+
+      } else {
+        console.log("Image selection was canceled.");
+      }
+    }
+
+    // Check if the user canceled the selection
+    if (!result.canceled) {
+      // Save the selected image
+      await saveProfileImage(result.assets[0].uri);
+    } else {
+      console.log("Image selection was canceled.");
+    }
+  } catch (error: any) {
+    Alert.alert("Error uploading profile image", error.message);
+    console.error("Error:", error);
+    setShowImgModal(false);
   }
 
+}
+const saveImgToFirebase = async (url:string) => {
+  try {
+    const docRef = await addDoc(collection(db,"files"),{
+      url,
+    })
+    console.log("Document written with ID: ", docRef.id);
+  } catch (error) {
+    console.log(error)
+  }
+}
 
   return (
     <SafeAreaView className="flex-1 bg-white p-5">
@@ -120,39 +201,44 @@ const Profile = () => {
         <Text className="text-2xl font-JakartaBold">Your Profile</Text>
         <View className="w-full flex justify-center items-center my-5">
           <View className="relative">
-            {user?.imageUrl ? (
-              <View className="w-full justify-center flex items-center">
-                <Image
-                  source={{ uri: user.imageUrl }}
-                  alt="Profile"
-                  className="w-36 h-36 rounded-full border-4 border-gray-300"
-                />
-              </View>
-            ) : (
-              <View
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 50,
-                  backgroundColor: "#d1d5db",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 36,
-                    fontWeight: "bold",
-                    color: "#4b5563",
-                  }}
-                >
-                  {initials}
-                </Text>
-              </View>
-            )}
+            {saveImage ? (
+  <Image
+    source={{ uri: saveImage }} // Pass the locally saved image URL here
+    alt="Profile"
+    className="w-36 h-36 rounded-full border-4 border-gray-300"
+  />
+) : user?.unsafeMetadata?.imageUrl ? (
+  <Image
+    source={{ uri: user.unsafeMetadata.imageUrl }} // Use the updated image from unsafeMetadata
+    alt="Profile"
+    className="w-36 h-36 rounded-full border-4 border-gray-300"
+  />
+) : (
+  <View
+    style={{
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      backgroundColor: "#d1d5db",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <Text
+      style={{
+        fontSize: 36,
+        fontWeight: "bold",
+        color: "#4b5563",
+      }}
+    >
+      {initials}
+    </Text>
+  </View>
+)}
+
             <TouchableOpacity 
               className="bg-slate-100 p-2 rounded-full absolute bottom-[-10px] right-3"
-              onPress={handleImgUpload}
+              onPress={() => setShowImgModal(true)}
             >
               <Image source={icons.upload} className="w-6 h-6" />
             </TouchableOpacity>
@@ -163,13 +249,19 @@ const Profile = () => {
               <View className="flex flex-col justify-start items-center bg-white rounded-2xl min-h-[200px] py-8 px-4">
                 <Text className="font-JakartaExtraBold text-2xl mb-2">Profile Photo</Text>
                 <View className="flex flex-row justify-center gap-6 w-full mt-1">
-                  <TouchableOpacity className="flex flex-col py-2 px-3 justify-center items-center rounded-lg bg-gray-200">
+                  <TouchableOpacity 
+                    className="flex flex-col py-2 px-3 justify-center items-center rounded-lg bg-gray-200"
+                    onPress={() => handleImgUpload}
+                    >
                     <Image source={icons.camera} className="w-8 h-8 " />
                     <Text className="text-sm font-JakartaRegular">
                       Camera
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity className="flex flex-col py-2 px-3 justify-center items-center rounded-lg bg-gray-200">
+                  <TouchableOpacity 
+                    className="flex flex-col py-2 px-3 justify-center items-center rounded-lg bg-gray-200"
+                    onPress={() => handleImgUpload("gallery")}
+                  >
                     <Image source={icons.gallery} className="w-8 h-8 " />
                     <Text className="text-sm font-JakartaRegular">
                       Gallery
@@ -256,3 +348,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
