@@ -10,6 +10,7 @@ import * as ImagePicker from "expo-image-picker";
 import {ref, uploadBytesResumable, getDownloadURL} from "firebase/storage"
 import { addDoc, collection, onSnapshot } from "firebase/firestore"
 import { db, storage } from "@/firebaseConfig";
+import * as Progress from 'react-native-progress';
 const Profile = () => {
   const { user } = useUser();
   console.log(user)
@@ -184,16 +185,16 @@ const Profile = () => {
   }
 
 }
-const saveImgToFirebase = async (url:string) => {
-  try {
-    const docRef = await addDoc(collection(db,"files"),{
-      url,
-    })
-    console.log("Document written with ID: ", docRef.id);
-  } catch (error) {
-    console.log(error)
+  const saveImgToFirebase = async (url:string) => {
+    try {
+      const docRef = await addDoc(collection(db,"files"),{
+        url,
+      })
+      console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
 
   return (
     <SafeAreaView className="flex-1 bg-white p-5">
@@ -202,39 +203,40 @@ const saveImgToFirebase = async (url:string) => {
         <View className="w-full flex justify-center items-center my-5">
           <View className="relative">
             {saveImage ? (
-  <Image
-    source={{ uri: saveImage }} // Pass the locally saved image URL here
-    alt="Profile"
-    className="w-36 h-36 rounded-full border-4 border-gray-300"
-  />
-) : user?.unsafeMetadata?.imageUrl ? (
-  <Image
-    source={{ uri: user.unsafeMetadata.imageUrl }} // Use the updated image from unsafeMetadata
-    alt="Profile"
-    className="w-36 h-36 rounded-full border-4 border-gray-300"
-  />
-) : (
-  <View
-    style={{
-      width: 100,
-      height: 100,
-      borderRadius: 50,
-      backgroundColor: "#d1d5db",
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-  >
-    <Text
-      style={{
-        fontSize: 36,
-        fontWeight: "bold",
-        color: "#4b5563",
-      }}
-    >
-      {initials}
-    </Text>
-  </View>
-)}
+          <Image
+            source={{ uri: saveImage }} // Pass the locally saved image URL here
+            alt="Profile"
+            className="w-36 h-36 rounded-full border-4 border-gray-300"
+          />
+        ) : user?.unsafeMetadata?.imageUrl ? (
+          <Image
+            source={{ uri: user.unsafeMetadata.imageUrl }} // Use the updated image from unsafeMetadata
+            alt="Profile"
+            className="w-36 h-36 rounded-full border-4 border-gray-300"
+          />
+        ) : (
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              backgroundColor: "#d1d5db",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 36,
+                fontWeight: "bold",
+                color: "#4b5563",
+              }}
+            >
+              {initials}
+            </Text>
+          </View>
+
+        )}
 
             <TouchableOpacity 
               className="bg-slate-100 p-2 rounded-full absolute bottom-[-10px] right-3"
@@ -242,6 +244,7 @@ const saveImgToFirebase = async (url:string) => {
             >
               <Image source={icons.upload} className="w-6 h-6" />
             </TouchableOpacity>
+             
             <ReactNativeModal 
               isVisible={showImgModal}
               onBackdropPress={()=>setShowImgModal(false)}
@@ -278,6 +281,17 @@ const saveImgToFirebase = async (url:string) => {
             </ReactNativeModal>
           </View>
         </View>
+        <View className="flex justify-center w-full items-center">
+          {progressUpload > 0 && progressUpload < 100 && (
+              <Progress.Bar
+                progress={progressUpload / 100} // Convert to a fraction
+                width={200}
+                color="#4CAF50"
+                style={{ marginTop: 10 }}
+              />
+            )}
+        </View>
+           
         <View className="p-2">
           <InputField
             label="First name"
