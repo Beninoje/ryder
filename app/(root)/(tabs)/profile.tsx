@@ -19,6 +19,8 @@ const Profile = () => {
   const [showImgModal, setShowImgModal] = useState(false);
   const initials = `${firstInitial}${lastInitial}`;
   const [saveImage, setSaveImage] = useState("");
+  const [deleteBtnDisabled,setDeleteBtnDisabled] = useState(false);
+  
   const [progressUpload, setProgressUpload] = useState(0)
 
   const [form, setForm] = useState({
@@ -90,10 +92,8 @@ const Profile = () => {
 
       const storageRef = ref(storage, `ProfileImages/${new Date().getTime()}`);
 
-    // Start the upload process
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
-    // Monitor the upload progress
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -106,11 +106,8 @@ const Profile = () => {
         Alert.alert("Error", "Failed to upload image");
       },
       async () => {
-        // Get the download URL once the upload completes
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        console.log("File available at:", downloadURL);
 
-        // Optionally save the URL in state or database
         setSaveImage(downloadURL);
         saveImgToFirebase(downloadURL);
 
@@ -119,14 +116,17 @@ const Profile = () => {
             unsafeMetadata: {
               imageUrl: downloadURL,
             },
+            
           });
+          setDeleteBtnDisabled(false);
           console.log("Clerk profile image updated.");
         }
+        
 
         Alert.alert("Success", "Image uploaded successfully!");
       }
     );
-    setShowImgModal(false); // Close the modal
+    setShowImgModal(false); 
   }
   catch (error) {
     console.error("Save image error:", error);
@@ -151,13 +151,11 @@ const Profile = () => {
         quality: 1,
       });
     } else {
-      // Request permissions for the camera
       const permission = await ImagePicker.requestCameraPermissionsAsync();
       if (!permission.granted) {
         throw new Error("Permission to access the camera is required.");
       }
 
-      // Launch the camera
       result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [1, 1],
@@ -171,13 +169,10 @@ const Profile = () => {
       }
     }
 
-    // Check if the user canceled the selection
     if (!result.canceled) {
-      // Save the selected image
       await saveProfileImage(result.assets[0].uri);
-    } else {
-      console.log("Image selection was canceled.");
-    }
+      setDeleteBtnDisabled(false);
+    } 
   } catch (error: any) {
     Alert.alert("Error uploading profile image", error.message);
     console.error("Error:", error);
@@ -190,11 +185,30 @@ const Profile = () => {
       const docRef = await addDoc(collection(db,"files"),{
         url,
       })
-      console.log("Document written with ID: ", docRef.id);
     } catch (error) {
       console.log(error)
     }
   }
+  const handleDeleteProfileImg = async () => {
+  try {
+    if (user) {
+      // Update Clerk metadata to remove the profile image URL
+      await user.update({
+        unsafeMetadata: {
+          imageUrl: null,
+        },
+      });
+    }
+
+    setSaveImage("");
+    setDeleteBtnDisabled(true);
+    Alert.alert("Success", "Profile image removed successfully!");
+  } catch (error) {
+    console.error("Error removing profile image:", error);
+    Alert.alert("Error", "Failed to remove profile image.");
+  }
+};
+
 
   return (
     <SafeAreaView className="flex-1 bg-white p-5">
@@ -217,9 +231,9 @@ const Profile = () => {
         ) : (
           <View
             style={{
-              width: 100,
-              height: 100,
-              borderRadius: 50,
+              width: 120,
+              height: 120,
+              borderRadius: 100,
               backgroundColor: "#d1d5db",
               justifyContent: "center",
               alignItems: "center",
@@ -270,7 +284,11 @@ const Profile = () => {
                       Gallery
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity className="flex flex-col py-2 px-3 justify-center items-center rounded-lg bg-gray-200">
+                  <TouchableOpacity 
+                    className="flex flex-col py-2 px-3 justify-center items-center rounded-lg bg-gray-200"
+                    onPress={handleDeleteProfileImg}
+                    disabled={deleteBtnDisabled}
+                  >
                     <Image source={icons.trash} className="w-8 h-8" />
                     <Text className="text-sm text-black font-JakartaRegular">
                       Remove
